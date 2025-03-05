@@ -3,18 +3,14 @@
     "target": "es2020",
     "module": "commonjs",
     "outDir": "./dist",
-    "baseUrl": "../../..",
-    "paths": {
-      "@shared/*": ["micro-services/utils/*"]
-    },
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/**/*",
-    "../../utils/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",

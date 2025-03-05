@@ -17,7 +17,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const result = await userService.login(email, password);
+    const result = await userService.login(email, password, res);
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -76,6 +76,11 @@ export const logout = async (req: Request, res: Response) => {
       throw new Error('User not authenticated');
     }
     await userService.logout(req.user.id);
+    
+    // Clear cookies
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    
     res.json({ message: 'Successfully logged out' });
   } catch (error) {
     if (error instanceof Error) {

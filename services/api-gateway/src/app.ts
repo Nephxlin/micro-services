@@ -1,13 +1,14 @@
+require('dotenv').config()
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
-import { verifyToken, requireAuth, roleCheck } from './middleware/auth.middleware';
+
+import cookieParser from 'cookie-parser';
+import { verifyToken, requireAuth, roleCheck, } from './middleware/api-gateway.middleware';
 import { routeConfig } from './config/routes.config';
 
 // Load environment variables
-dotenv.config();
 
 interface ServiceConfig {
   url: string;
@@ -19,15 +20,19 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
 
 // Service routes configuration
 const services: { [key: string]: ServiceConfig } = {
   auth: {
-    url: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
+    url: process.env.AUTH_SERVICE_URL  || 'http://localhost:8001',
     pathRewrite: {
-      '^/api/auth': ''
+      '^/api/auth': '',
     },
     headers: {
       'x-gateway-secret': process.env.GATEWAY_SECRET || '',
@@ -36,7 +41,7 @@ const services: { [key: string]: ServiceConfig } = {
     }
   },
   courses: {
-    url: process.env.COURSES_SERVICE_URL || 'http://localhost:3002',
+    url: process.env.COURSES_SERVICE_URL || 'http://localhost:8002',
     pathRewrite: {
       '^/api/courses': ''
     },
@@ -44,7 +49,17 @@ const services: { [key: string]: ServiceConfig } = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
-  }
+  },
+  organizations: {
+    url: process.env.ORGANIZATION_SERVICE_URL || 'http://localhost:8003',
+    pathRewrite: {
+      '^/api/organizations': ''
+    },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  },
 };
 
 // Helper function to check if route is public
@@ -83,9 +98,11 @@ Object.entries(services).forEach(([service, config]) => {
       return res.status(404).json({ error: 'Route not found' });
     }
 
-    // Check authentication and roles
-    requireAuth(req, res, () => {
-      roleCheck(requiredRoles)(req, res, next);
+    // First verify the token, then check authentication and roles
+    verifyToken(req, res, () => {
+      requireAuth(req, res, () => {
+        roleCheck(requiredRoles)(req, res, next);
+      });
     });
 
   }, createProxyMiddleware({

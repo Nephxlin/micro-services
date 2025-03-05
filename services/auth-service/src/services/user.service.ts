@@ -41,7 +41,7 @@ export const register = async (data: RegisterData): Promise<Omit<User, 'password
   return userWithoutPassword;
 };
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string, res: unknown) => {
   const user = await prisma.user.findUnique({
     where: { email }
   });

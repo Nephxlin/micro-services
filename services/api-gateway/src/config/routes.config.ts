@@ -13,23 +13,24 @@ export const routeConfig: Record<string, RouteConfig> = {
       '/api/auth/register',
       '/api/auth/forgot-password',
       '/api/auth/reset-password',
+      '/api/auth/refresh-token',
     ],
     protected: [
       {
         path: '/api/auth/profile',
-        roles: ['student', 'instructor', 'admin']
+        roles: ['STUDENT', 'INSTRUCTOR', 'ADMIN']
       },
       {
         path: '/api/auth/change-password',
-        roles: ['student', 'instructor', 'admin']
+        roles: ['STUDENT', 'INSTRUCTOR', 'ADMIN']
       },
       {
         path: '/api/auth/logout',
-        roles: ['student', 'instructor', 'admin']
+        roles: ['STUDENT', 'INSTRUCTOR', 'ADMIN']
       },
       {
         path: '/api/auth/users',
-        roles: ['admin']
+        roles: ['ADMIN']
       }
     ]
   },
@@ -73,5 +74,11 @@ export const routeConfig: Record<string, RouteConfig> = {
         roles: ['instructor', 'admin']
       }
     ]
+  },
+  organizations:{
+  public:[
+    '/api/organizations'
+  ],
+  protected: []
   }
 }; 

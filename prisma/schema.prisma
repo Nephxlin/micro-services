@@ -1,10 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
-  engineType    = "binary"
   binaryTargets = ["native"]
+  engineType    = "binary"
 }
 
 datasource db {
@@ -13,21 +10,71 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  firstName     String
-  lastName      String
-  role          Role      @default(STUDENT)
-  refreshToken  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  passwordResetToken String?
+  id                   String               @id @default(uuid())
+  email                String               @unique
+  password             String
+  firstName            String
+  lastName             String
+  role                 Role                 @default(STUDENT)
+  refreshToken         String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  passwordResetToken   String?
   passwordResetExpires DateTime?
+  organizations        OrganizationMember[]
+}
+
+model Course {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  price        Float    @default(0)
+  duration     Int      @default(0)
+  level        Level    @default(BEGINNER)
+  published    Boolean  @default(false)
+  instructorId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Organization {
+  id          String               @id @default(uuid())
+  name        String
+  description String?
+  logo        String?
+  website     String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  members     OrganizationMember[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  userId         String
+  organizationId String
+  role           OrgRole      @default(MEMBER)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, organizationId])
 }
 
 enum Role {
   STUDENT
   INSTRUCTOR
   ADMIN
-} 
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}

@@ -1,11 +1,10 @@
+require('dotenv').config()
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
-import { validateGatewaySecret } from './middleware/gateway.middleware';
+import { validateGatewaySecret } from './shared/middlewares/gateway.middleware';
 
 // Load environment variables
-dotenv.config();
 
 const app = express();
 

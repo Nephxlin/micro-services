@@ -14,6 +14,7 @@ declare global {
     interface Request {
       user?: {
         id: string;
+        email: string;
         role: string;
       };
     }
@@ -26,6 +27,8 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
+   
+ // Check for token in cookies first, then fallback to Authorization header
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -44,6 +47,7 @@ export const authenticate = async (
 
     req.user = {
       id: user.id,
+      email: user.email,
       role: user.role
     };
 
@@ -53,16 +57,18 @@ export const authenticate = async (
   }
 };
 
-export const authorize = (roles: string[]) => {
+export const authorize = (roles: string[], resourceUserId?: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
+
     if (!req.user) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
+    // Allow access if user has required role
+    if (roles.includes(req.user.role)) {
+      return next();
     }
 
-    next();
+    return res.status(403).json({ error: 'Insufficient permissions' });
   };
 }; 

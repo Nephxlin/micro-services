@@ -1,0 +1,19 @@
+{
+  "name": "organization-service",
+  "version": "1.0.0",
+  "description": "organization-service microservice for LMS system",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  },
+  "keywords": [
+    "microservice",
+    "typescript",
+    "prisma",
+    "organization"
+  ],
+  "author": "",
+  "license": "ISC"
+}
