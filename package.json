@@ -3,18 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "api-gateway",
-    "auth-service"
+    "services/*"
   ],
   "scripts": {
-    "dev": "npm run prisma:generate && concurrently \"npm run dev:auth\" \"npm run dev:gateway\"",
-    "dev:auth": "cd auth-service && npm run dev",
-    "dev:gateway": "cd api-gateway && npm run dev",
+    "dev": "npm run prisma:generate && concurrently \"npm run dev:services\"",
+    "dev:services": "concurrently \"npm run dev --workspace=services/auth-service\" \"npm run dev --workspace=services/api-gateway\"",
     "build": "npm run prisma:generate && npm run build --workspaces",
     "start": "npm run start --workspaces",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "create:service": "node create-service.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -38,4 +37,4 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
   }
-} 
+}

@@ -30,7 +30,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-const PORT = Number(process.env.PORT) || 3001;
+const PORT = Number(process.env.PORT)
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Auth service is running on port ${PORT}`);
